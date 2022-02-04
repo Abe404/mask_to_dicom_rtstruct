@@ -184,8 +184,9 @@ def load_image_series(dicom_dir):
             fdataset = pydicom.dcmread(fpath)
             # Computed Radiography Image Storage SOP Class UID
             # https://dicom.nema.org/dicom/2013/output/chtml/part04/sect_B.5.html
-            im_sop_class_uid = '1.2.840.10008.5.1.4.1.1.4'
-            if fdataset.SOPClassUID == im_sop_class_uid:
+            mr_sop_class_uid = '1.2.840.10008.5.1.4.1.1.4'
+            ct_sop_class_uid = '1.2.840.10008.5.1.4.1.1.2'
+            if fdataset.SOPClassUID in [mr_sop_class_uid, ct_sop_class_uid]:
                 image_series.append(fdataset)
     return image_series
 
@@ -268,6 +269,33 @@ def get_3d_image(dicom_series_path):
     return image
 
 
+def add_dicom_struct(series_path, struct_path, struct_name, mask):
+    """ series path - full path to the folder containing the dicom series images
+        struct path - full path to the existing rtstruct file.
+        struct_name - name of the new struct to be added.
+        mask - numpy binary ndarray for the structure
+    """
+    image_series_files = load_image_series(series_path)
+    struct_ds = pydicom.dcmread(struct_path)
+    contours_mm = mask_to_contours_mm(mask, image_series_files)
+    add_contour(struct_ds, contours_mm, struct_name, struct_ds)
+    print('save dicom struct as', struct_path)
+    struct_ds.save_as(struct_path, write_like_original=True)
+     
+
+def mask_to_contours_mm(mask, image_series_files):
+    # list of lists of points 
+    contours_mm = []
+    for i in range(mask.shape[0]):
+        axial_slice = mask[i, :, :]
+        series_slice_ds = image_series_files[i]
+        cv_contours = get_slice_contours(axial_slice, i)
+        for points_list in cv_contours:
+            points_mm = pixel_to_mm_points(points_list, image_series_files)
+            contours_mm.append(points_mm)
+    return contours_mm
+
+    
 def save_dicom_struct(dicom_series_path, mask, fname, struct_name):
     """"
         # Example usage
@@ -281,16 +309,10 @@ def save_dicom_struct(dicom_series_path, mask, fname, struct_name):
     image_series_files = load_image_series(dicom_series_path)
     new_struct_ds = create_rt_struct_ds(image_series_files[0], fname,
                                         label=struct_name, name=struct_name)
-    # list of lists of points 
-    contours_mm = []
-    for i in range(mask.shape[2]):
-        axial_slice = mask[:, :, i]
-        series_slice_ds = image_series_files[i]
-        cv_contours = get_slice_contours(axial_slice, i)
-        for points_list in cv_contours:
-            points_mm = pixel_to_mm_points(points_list, image_series_files)
-            contours_mm.append(points_mm)
+    contours_mm = mask_to_contours_mm(mask, image_series_files)
     add_contour(new_struct_ds, contours_mm, struct_name, series_slice_ds)
     output_path = os.path.join(dicom_series_path, fname)
     print('save dicom struct as', output_path)
     new_struct_ds.save_as(output_path, write_like_original=False)
+
+
