@@ -7,3 +7,6 @@ Example use case: Creating a new file named struct.dcm in the dicom_series_path 
 import dicom_utils as dcm
 dcm.save_dicom_struct(dicom_series_path, numpy_binary_mask, fname='struct.dcm', struct_name='struct_name')
 ```
+
+
+[![DOI](https://zenodo.org/badge/450117902.svg)](https://zenodo.org/badge/latestdoi/450117902)
