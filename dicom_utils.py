@@ -129,7 +129,13 @@ def add_contour(rt_ds, contour, name, slice_ds, color=[255,0, 0]):
     each list in contours is a list of contour_points
     with the format [x,y,z,x,y,z....]
     """
-    contour_num = str(len(rt_ds.ROIContourSequence) + 1) # starts at 1
+    # get the max contour number found so far
+    # largest ROI number may be greater than the length of the sequence (and some numbers might be missing)
+    contour_num = 1
+    if len(rt_ds.StructureSetROISequence):
+        max_contour_num = max([s.ROINumber for s in rt_ds.StructureSetROISequence])
+        contour_num = max_contour_num + 1
+
     roi_contour = Dataset()
     roi_contour.ROIDisplayColor = color
     contour_sequence = Sequence()
