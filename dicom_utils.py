@@ -195,13 +195,13 @@ def load_image_series(dicom_dir):
             #  PET Image Storage
             pet_sop_class_uid = '1.2.840.10008.5.1.4.1.1.128'
             # Enhanced PET Image Storage
-            pet_enhanded_sop_class_uid = '1.2.840.10008.5.1.4.1.1.130'
+            pet_enhanced_sop_class_uid = '1.2.840.10008.5.1.4.1.1.130'
             # legacy PET Image Storage
             pet_legacy_sop_class_uid = '1.2.840.10008.5.1.4.1.1.128.1'
             if fdataset.SOPClassUID in [mr_sop_class_uid,
                                         ct_sop_class_uid,
                                         pet_sop_class_uid,
-                                        pet_enhanded_sop_class_uid,
+                                        pet_enhanced_sop_class_uid,
                                         pet_legacy_sop_class_uid]:
                 image_series.append(fdataset)
             else:
