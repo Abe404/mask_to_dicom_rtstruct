@@ -194,8 +194,11 @@ def load_image_series(dicom_dir):
             ct_sop_class_uid = '1.2.840.10008.5.1.4.1.1.2'
             # Enhanced PET Image Storage (legacy is different, see link above).
             pet_sop_class_uid = '1.2.840.10008.5.1.4.1.1.130'
-            if fdataset.SOPClassUID in [mr_sop_class_uid, ct_sop_class_uid]:
+            if fdataset.SOPClassUID in [mr_sop_class_uid, ct_sop_class_uid, pet_sop_class_uid]:
                 image_series.append(fdataset)
+            else:
+                print('Excluding slice from image series as SOPClassUID is', fdataset.SOPClassUID)
+                
     return image_series
 
 
