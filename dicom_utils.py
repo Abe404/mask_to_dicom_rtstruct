@@ -192,13 +192,16 @@ def load_image_series(dicom_dir):
             # https://dicom.nema.org/dicom/2013/output/chtml/part04/sect_B.5.html
             mr_sop_class_uid = '1.2.840.10008.5.1.4.1.1.4'
             ct_sop_class_uid = '1.2.840.10008.5.1.4.1.1.2'
+            #  PET Image Storage
+            pet_sop_class_uid = '1.2.840.10008.5.1.4.1.1.128'
             # Enhanced PET Image Storage
-            pet_sop_class_uid = '1.2.840.10008.5.1.4.1.1.130'
+            pet_enhanded_sop_class_uid = '1.2.840.10008.5.1.4.1.1.130'
             # legacy PET Image Storage
             pet_legacy_sop_class_uid = '1.2.840.10008.5.1.4.1.1.128.1'
             if fdataset.SOPClassUID in [mr_sop_class_uid,
                                         ct_sop_class_uid,
                                         pet_sop_class_uid,
+                                        pet_enhanded_sop_class_uid,
                                         pet_legacy_sop_class_uid]:
                 image_series.append(fdataset)
             else:
