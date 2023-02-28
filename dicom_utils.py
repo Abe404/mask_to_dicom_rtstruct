@@ -329,7 +329,7 @@ def save_dicom_struct(dicom_series_path, mask, fname, struct_name):
     new_struct_ds = create_rt_struct_ds(image_series_files[0], fname,
                                         label=struct_name, name=struct_name)
     contours_mm = mask_to_contours_mm(mask, image_series_files)
-    add_contour(new_struct_ds, contours_mm, struct_name, series_slice_ds)
+    add_contour(new_struct_ds, contours_mm, struct_name, image_series_files[0])
     output_path = os.path.join(dicom_series_path, fname)
     print('save dicom struct as', output_path)
     new_struct_ds.save_as(output_path, write_like_original=False)
